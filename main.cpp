@@ -17,7 +17,7 @@ public:
     Node* right;
     int height = 1;
     int amount = 1;
-
+    /*
     void Insert(Node* pnode, int x)
     {
         if (x < k)
@@ -57,7 +57,43 @@ public:
             amount++;
         }
     }
-
+    */
+    void Insert(int x)
+    {
+        if (x < k)
+        {
+            if (left != nullptr)
+            {
+                left->Insert(x);
+            }
+            else
+            {
+                left = new Node;
+                left->k = x;
+                left->left = nullptr;
+                left->right = nullptr;
+            }
+        }
+        else if (x > k)
+        {
+            if (right != nullptr)
+            {
+                right->Insert(x);
+            }
+            else
+            {
+                right = new Node;
+                right->k = x;
+                right->left = nullptr;
+                right->right = nullptr;
+            }
+        }
+        else if (x == k)
+        {
+            amount++;
+        }
+    }
+    /*
     int Height(Node* pnode)
     {
         if (pnode->left == nullptr && pnode->right == nullptr)
@@ -87,6 +123,37 @@ public:
         }
         return 1;
     }
+    */
+    int Height()
+    {
+        if (left == nullptr && right == nullptr)
+        {
+            return 1;
+        }
+        else if (left == nullptr && right != nullptr)
+        {
+            return right->Height() + 1;
+        }
+        else if (right == nullptr && left != nullptr)
+        {
+            return left->Height() + 1;
+        }
+        else
+        {
+            int l = left->Height();
+            int r = right->Height();
+            if (l > r)
+            {
+                return l + 1;
+            }
+            else if (l <= r)
+            {
+                return r + 1;
+            }
+        }
+        return 1;
+    }
+
 
     void Print()
     {
@@ -122,30 +189,68 @@ public:
             right->Print_leaves();
     }
 
-    bool Is_balanced(Node* pnode)
+    void print_with_sons()
     {
-        if (pnode->left == nullptr && pnode->right == nullptr)
-        {
-            return true;
-        }
-        else if (pnode->left == nullptr && pnode->right != nullptr)
-        {
-            if (pnode->right->Height(pnode->right) < 2)
-                return true;
-            else
-                return false;
-        }
-        else if (pnode->right == nullptr && pnode->left != nullptr)
-        {
-            if (pnode->left->Height(pnode->left) < 2)
-                return true;
-            else
-                return false;
-        }
+        cout << k;
+        if (left != nullptr)
+            cout << ", left is " << left->k;
         else
-            return pnode->left->Is_balanced(pnode->left) & pnode->right->Is_balanced(pnode->right) & (abs(pnode->right->Height(pnode->right) - left->Height(pnode->left)) < 2);
+            cout << ", left is none";
+        if (right != nullptr)
+            cout << ", right is " << right->k;
+        else
+            cout << ", right is none";
+        cout << endl;
+        if (left != nullptr)
+            left->print_with_sons();
+        if (right != nullptr)
+            right->print_with_sons();
     }
 
+    bool Is_balanced()
+    {
+        //cout<<"gg\n";
+        if (left == nullptr && right == nullptr)
+        {
+            cout << "trushka\n";
+            return true;
+        }
+        else if (left == nullptr && right != nullptr)
+        {
+            cout << "huy\n";
+            if (right->Height() < 2)
+            {
+                cout<<"ladno\n";
+                return true;
+            }
+            else
+            {
+                cout << "tafak\n";
+                return false;
+            }
+        }
+        else if (right == nullptr && left != nullptr)
+        {
+            cout << "gavno\n";
+            if (left->Height() < 2)
+            {
+                cout<<"ladno\n";
+                return true;
+            }
+            else
+            {
+                cout << "tafak\n";
+                return false;
+            }
+        }
+        else
+        {
+            cout << "13yo demon\n";
+            return left->Is_balanced() & right->Is_balanced() & (abs(right->Height() - left->Height()) < 2);
+        }
+    }
+
+    /*
     Node* Rotate_right(Node* pnode)
     {
         Node* res = pnode->left;
@@ -153,8 +258,18 @@ public:
         pnode->left->right = pnode;
         pnode->left = ptr;
         return res;
+    }*/
+
+    Node* Rotate_right()
+    {
+        Node* res = left;
+        Node* ptr = left->right;
+        left->right = this;
+        left = ptr;
+        return res;
     }
 
+    /*
     Node* Rotate_left(Node* pnode)
     {
         Node* res = pnode->right;
@@ -162,8 +277,18 @@ public:
         pnode->right->left = pnode;
         pnode->right = ptr;
         return res;
+    }*/
+
+    Node* Rotate_left()
+    {
+        //Node* res = right;
+        Node* res = right->left;
+        left = this;
+        //right = ptr;
+        return res;
     }
 
+    /*
     Node* Balance(Node* pnode)
     {
         if (!Is_balanced(pnode))
@@ -180,6 +305,95 @@ public:
             }
         }
         return pnode;
+    }*/
+
+    Node* Balance()
+    {
+        cout << "sha budet balanceeee\n";
+        if (!Is_balanced())
+        {
+            cout << "TOCHNO sha budet balanceeee\n";
+            if (left !=  nullptr)
+            {
+                if (!left->Is_balanced())
+                {
+                    cout << "balancim levo\n";
+                    left = left->Balance();
+                }
+            }
+            if (right != nullptr)
+            {
+                if (!right->Is_balanced())
+                {
+                    cout << "balancim pravo\n";
+                    right = right->Balance();
+                }
+            }
+            if (left != nullptr && right != nullptr)
+            {
+                cout << "obadva\n";
+                if (left->Height() - right->Height() == 2)
+                {
+                    cout << "leftik\n";
+                    if (left->right != nullptr && left->left != nullptr)
+                        left = left->Rotate_left();
+                    //return Rotate_right();
+                    Node* R = Rotate_right();
+                    if (R->left !=  nullptr)
+                    {
+                        if (!R->left->Is_balanced())
+                        {
+                            cout << "balancim levo\n";
+                            R->left = R->left->Balance();
+                        }
+                    }
+                    if (R->right != nullptr)
+                    {
+                        if (!R->right->Is_balanced())
+                        {
+                            cout << "balancim pravo\n";
+                            R->right = R->right->Balance();
+                        }
+                    }
+                    return R;
+                }
+                else if (right->Height() - left->Height() == 2)
+                {
+                    cout << "rightik\n";
+                    if (right->right != nullptr && right->left != nullptr)
+                        right = right->Rotate_right();
+                    //return Rotate_left();
+                    Node* R = Rotate_left();
+                    if (R->left !=  nullptr)
+                    {
+                        if (!R->left->Is_balanced())
+                        {
+                            cout << "balancim levo\n";
+                            R->left = R->left->Balance();
+                        }
+                    }
+                    if (R->right != nullptr)
+                    {
+                        if (!R->right->Is_balanced())
+                        {
+                            cout << "balancim pravo\n";
+                            R->right = R->right->Balance();
+                        }
+                    }
+                    return R;
+                }
+            }
+            else if (left == nullptr && right != nullptr)
+            {
+                cout <<"spravanalevo\n";
+                return Rotate_left();
+            }
+            else
+            {
+                cout <<"slevanaprava\n"; return Rotate_right();
+            }
+        }
+        return this;
     }
 
 };
@@ -223,9 +437,11 @@ public:
             Pnode->k = x;
             Pnode->left = nullptr;
             Pnode->right = nullptr;
+            //cout << "blya\n";
         }
         else
-            Pnode->Insert(Pnode, x);
+            Pnode->Insert(x);
+        cout << "dalshe balancing\n";
         Balance();
     }
 
@@ -236,7 +452,7 @@ public:
 
     int Height()
     {
-        return Pnode->Height(Pnode) + 1;
+        return Pnode->Height() + 1;
     }
 
     void Print_leaves()
@@ -246,7 +462,7 @@ public:
 
     bool Is_balanced()
     {
-        return Pnode->Is_balanced(Pnode);
+        return Pnode->Is_balanced();
     }
 
     void Print_amount()
@@ -256,7 +472,13 @@ public:
 
     void Balance()
     {
-        Pnode = Pnode->Balance(Pnode);
+       Pnode = Pnode->Balance();
+       //Pnode->Balance();
+    }
+
+    void Print_with_sons()
+    {
+        Pnode->print_with_sons();
     }
 
 };
@@ -270,6 +492,11 @@ int main()
     while (a)
     {
         tree.Insert(a);
+        if (tree.Is_balanced())
+        cout << "YES\n";
+        else
+        cout << "NO\n";
+        tree.Print_with_sons();
         cin >> a;
     }
     //tree.Print();
